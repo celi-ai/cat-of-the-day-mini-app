@@ -51,25 +51,30 @@
         const catImage = document.getElementById('catImage');
         const dateDisplay = document.getElementById('dateDisplay');
 
-        function fetchDailyCat() {
-            const today = new Date().toISOString().split('T')[0];
-            const corsProxy = 'https://cors-anywhere.herokuapp.com/';
-            const apiUrl = `https://api.thecatapi.com/v1/images/search?date=${today}`;
-            
-            fetch(corsProxy + apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    catImage.src = data[0].url;
-                    dateDisplay.textContent = today;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    catImage.alt = "Failed to load cat image";
-                    dateDisplay.textContent = "Error loading image";
-                });
+        const catImages = [
+            'https://cataas.com/cat/cute',
+            'https://cataas.com/cat/funny',
+            'https://cataas.com/cat/sleep',
+            'https://cataas.com/cat/play',
+            'https://cataas.com/cat/grey',
+            'https://cataas.com/cat/white',
+            'https://cataas.com/cat/black'
+        ];
+
+        function getDailyCat() {
+            const today = new Date();
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+            const imageIndex = dayOfYear % catImages.length;
+            return catImages[imageIndex];
         }
 
-        fetchDailyCat();
+        function displayCat() {
+            const today = new Date().toISOString().split('T')[0];
+            catImage.src = getDailyCat();
+            dateDisplay.textContent = today;
+        }
+
+        displayCat();
     </script>
 </body>
 </html>
