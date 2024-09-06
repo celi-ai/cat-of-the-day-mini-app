@@ -2,67 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cat of the Day</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/telegram-webview/2.0.0/telegram-web-app.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            padding: 20px;
+            color: var(--tg-theme-text-color);
+            background-color: var(--tg-theme-bg-color);
         }
         h1 {
-            color: #333;
+            margin-bottom: 10px;
+        }
+        #dateDisplay {
+            margin-bottom: 20px;
         }
         #catImage {
             max-width: 100%;
             height: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        #dateDisplay {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #666;
         }
     </style>
 </head>
 <body>
     <h1>Cat of the Day</h1>
-    <img id="catImage" alt="Cat of the Day" />
     <div id="dateDisplay"></div>
+    <img id="catImage" alt="Cat of the Day">
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const telegram = window.Telegram.WebApp;
-            telegram.ready();
+        const images = ['1.jpeg', '2.jpeg', '3.jpeg'];
+        const catImage = document.getElementById('catImage');
+        const dateDisplay = document.getElementById('dateDisplay');
 
-            const catImage = document.getElementById('catImage');
-            const dateDisplay = document.getElementById('dateDisplay');
+        function updateDateAndImage() {
+            const today = new Date();
+            dateDisplay.textContent = today.toDateString();
 
-            // Use GitHub Pages URL
-            const baseUrl = 'https://celi-ai.github.io/cat-of-the-day-mini-app/images/';
-            
-            function getDayOfYear(date) {
-                return Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-            }
+            const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
+            const imageIndex = daysSinceEpoch % 3;
+            catImage.src = `images/${images[imageIndex]}`;
+        }
 
-            const currentDate = new Date();
-            const dayOfYear = getDayOfYear(currentDate);
+        // Initialize Telegram Mini App
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.setHeaderColor('secondary_bg_color');
+        window.Telegram.WebApp.onEvent('viewportChanged', updateDateAndImage);
 
-            const imageNumber = (dayOfYear % 3) + 1;
-
-            catImage.src = `${baseUrl}${imageNumber}.jpeg`;
-
-            dateDisplay.textContent = currentDate.toDateString();
-
-            telegram.expand();
-        });
+        // Initial update
+        updateDateAndImage();
     </script>
 </body>
 </html>
