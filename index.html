@@ -21,29 +21,73 @@
         #dateDisplay {
             margin-bottom: 20px;
         }
+        #catContainer {
+            position: relative;
+            cursor: pointer;
+        }
         #catImage {
             max-width: 100%;
             height: auto;
+            transition: transform 0.3s ease;
+        }
+        #patEffect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border: 2px solid #ff69b4;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        #patCount {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
     <h1>Cat of the Day</h1>
+    <div id="patCount">Pat Count: 0</div>
     <div id="dateDisplay"></div>
-    <img id="catImage" alt="Cat of the Day">
-
+    <div id="catContainer">
+        <img id="catImage" alt="Cat of the Day">
+        <div id="patEffect"></div>
+    </div>
     <script>
         const images = ['1.jpeg', '2.jpeg', '3.jpeg'];
         const catImage = document.getElementById('catImage');
         const dateDisplay = document.getElementById('dateDisplay');
+        const patEffect = document.getElementById('patEffect');
+        const patCountDisplay = document.getElementById('patCount');
+        let patCount = 0;
 
         function updateDateAndImage() {
             const today = new Date();
             dateDisplay.textContent = today.toDateString();
-
             const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
             const imageIndex = daysSinceEpoch % 3;
             catImage.src = `images/${images[imageIndex]}`;
+        }
+
+        function patCat() {
+            patCount++;
+            patCountDisplay.textContent = `Pat Count: ${patCount}`;
+
+            // Animate cat
+            catImage.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                catImage.style.transform = 'scale(1)';
+            }, 300);
+
+            // Show pat effect
+            patEffect.style.opacity = '1';
+            patEffect.style.transform = 'translate(-50%, -50%) scale(1.2)';
+            setTimeout(() => {
+                patEffect.style.opacity = '0';
+                patEffect.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 300);
         }
 
         // Initialize Telegram Mini App
@@ -53,6 +97,9 @@
 
         // Initial update
         updateDateAndImage();
+
+        // Add click event listener for patting
+        catImage.addEventListener('click', patCat);
     </script>
 </body>
 </html>
