@@ -45,30 +45,22 @@
             const catImage = document.getElementById('catImage');
             const dateDisplay = document.getElementById('dateDisplay');
 
-            // Replace 'YOUR_GITHUB_USERNAME' and 'YOUR_REPO_NAME' with your actual GitHub username and repository name
-            // celi-ai/cat-of-the-day-mini-app
-
-            const baseUrl = 'https://raw.githubusercontent.com/celi-ai/cat-of-the-day-mini-app/main/images/';
+            // Use GitHub Pages URL
+            const baseUrl = 'https://celi-ai.github.io/cat-of-the-day-mini-app/images/';
             
-            // Function to get the day of the year (1-366)
             function getDayOfYear(date) {
                 return Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
             }
 
-            // Get current date and day of the year
             const currentDate = new Date();
             const dayOfYear = getDayOfYear(currentDate);
 
-            // Calculate which of the 3 images to use (1, 2, or 3)
             const imageNumber = (dayOfYear % 3) + 1;
 
-            // Set the cat image based on the calculated image number
             catImage.src = `${baseUrl}${imageNumber}.jpeg`;
 
-            // Set current date
             dateDisplay.textContent = currentDate.toDateString();
 
-            // Expand the app to full screen
             telegram.expand();
         });
     </script>
