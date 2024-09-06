@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat of the Day</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #ffffff;
+            color: #333333;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #catImage {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #dateDisplay {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cat of the Day</h1>
+    <img id="catImage" alt="Cat of the Day" src="">
+    <div id="dateDisplay"></div>
+
+    <script>
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+        }
+
+        const catImage = document.getElementById('catImage');
+        const dateDisplay = document.getElementById('dateDisplay');
+
+        function fetchDailyCat() {
+            const today = new Date().toISOString().split('T')[0];
+            const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+            const apiUrl = `https://api.thecatapi.com/v1/images/search?date=${today}`;
+            
+            fetch(corsProxy + apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    catImage.src = data[0].url;
+                    dateDisplay.textContent = today;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    catImage.alt = "Failed to load cat image";
+                    dateDisplay.textContent = "Error loading image";
+                });
+        }
+
+        fetchDailyCat();
+    </script>
+</body>
+</html>
