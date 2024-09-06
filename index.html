@@ -24,11 +24,12 @@
         #catContainer {
             position: relative;
             cursor: pointer;
+            overflow: hidden;
         }
         #catImage {
             max-width: 100%;
             height: auto;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, filter 0.3s ease;
         }
         #patEffect {
             position: absolute;
@@ -45,13 +46,30 @@
         }
         #patCount {
             margin-bottom: 10px;
-            font-size: 18px;
+            font-size: 24px;
             font-weight: bold;
+            transition: transform 0.2s ease;
         }
         @keyframes patPulse {
             0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.7; }
             50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.5; }
             100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+        @keyframes float {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5) rotate(360deg); opacity: 0; }
+        }
+        @keyframes particle {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle 1s ease-out forwards;
         }
     </style>
 </head>
@@ -69,6 +87,7 @@
         const dateDisplay = document.getElementById('dateDisplay');
         const patEffect = document.getElementById('patEffect');
         const patCountDisplay = document.getElementById('patCount');
+        const catContainer = document.getElementById('catContainer');
         let patCount = 0;
 
         function updateDateAndImage() {
@@ -79,14 +98,18 @@
             catImage.src = `images/${images[imageIndex]}`;
         }
 
-        function patCat() {
+        function patCat(event) {
             patCount++;
             patCountDisplay.textContent = `Pat Count: ${patCount}`;
+            patCountDisplay.style.transform = 'scale(1.2)';
+            setTimeout(() => { patCountDisplay.style.transform = 'scale(1)'; }, 200);
 
             // Animate cat
             catImage.style.transform = 'scale(0.95)';
+            catImage.style.filter = 'brightness(1.2)';
             setTimeout(() => {
                 catImage.style.transform = 'scale(1)';
+                catImage.style.filter = 'brightness(1)';
             }, 200);
 
             // Show pat effect
@@ -98,11 +121,19 @@
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => createHeart(), i * 100);
             }
+
+            // Create particle explosion
+            createParticles(event.clientX, event.clientY);
+
+            // Haptic feedback (if supported)
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
         }
 
         function createHeart() {
             const heart = document.createElement('div');
-            heart.innerHTML = '❤️';
+            heart.innerHTML = ['❤️', '😺', '🐾', '🐱'][Math.floor(Math.random() * 4)];
             heart.style.position = 'absolute';
             heart.style.fontSize = '24px';
             heart.style.pointerEvents = 'none';
@@ -116,6 +147,27 @@
             }, 2000);
         }
 
+        function createParticles(x, y) {
+            const rect = catContainer.getBoundingClientRect();
+            const localX = x - rect.left;
+            const localY = y - rect.top;
+
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                particle.style.left = `${localX}px`;
+                particle.style.top = `${localY}px`;
+                particle.style.setProperty('--tx', `${(Math.random() - 0.5) * 200}px`);
+                particle.style.setProperty('--ty', `${(Math.random() - 0.5) * 200}px`);
+                catContainer.appendChild(particle);
+
+                setTimeout(() => {
+                    catContainer.removeChild(particle);
+                }, 1000);
+            }
+        }
+
         // Initialize Telegram Mini App
         window.Telegram.WebApp.ready();
         window.Telegram.WebApp.setHeaderColor('secondary_bg_color');
@@ -127,11 +179,5 @@
         // Add click event listener for patting
         catImage.addEventListener('click', patCat);
     </script>
-    <style>
-        @keyframes float {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
-        }
-    </style>
 </body>
 </html>
