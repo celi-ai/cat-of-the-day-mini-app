@@ -56,15 +56,6 @@
 
             // Expand the app to full screen
             telegram.expand();
-
-            // Set the main button
-            telegram.MainButton.setText('Share Cat').show().onClick(() => {
-                telegram.sendData(JSON.stringify({
-                    action: 'share',
-                    imageUrl: catImage.src,
-                    date: dateDisplay.textContent
-                }));
-            });
         });
     </script>
 </body>
